@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -10,15 +10,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int angle = 0;
-  double lightness = 0.5;
+  int angle = 24;
+  double lightness = 0.3;
   double color_green = 120;
   double color_red = 0;
   double color_yellow = 51;
   double color_orange = 39;
   double color_blue = 210;
-  double color_of_inside_pot = 39;
-  Color led_color = Colors.red;
+  double color_of_inside_pot = 0;
+  int led_color = 0;
   Color led_shadow_color = Colors.white;
   final double? _pot_width = 110;
   final double? _pot_hight = 110;
@@ -31,53 +31,95 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         padding: const EdgeInsets.all(15),
         alignment: Alignment.center,
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15), color: Colors.grey),
-          padding: const EdgeInsets.all(8),
-          child: Stack(children: [
-            Align(
-              alignment: const Alignment(0, 0),
-              child: Container(
-                width: 600,
-                height: 600,
-                child: Stack(
-                  children: [
-                    const Align(
-                      alignment: Alignment(0, 0),
-                      child: Image(
-                        image: AssetImage('assets/image/circut.png'),
-                        fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            height: 450,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15), color: Colors.grey),
+            padding: const EdgeInsets.all(8),
+            child: Stack(children: [
+              Align(
+                alignment: const Alignment(0, 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(244, 245, 246, 1),
+                      borderRadius: BorderRadius.circular(20)),
+                  width: 620,
+                  height: 410,
+                  child: Stack(
+                    children: [
+                      const Align(
+                        alignment: Alignment(0, 0),
+                        child: Image(
+                          image: AssetImage('assets/image/circut.png'),
+                          fit: BoxFit.cover,
+                          width: 600,
+                          height: 400,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 196,
-                      right: 145,
-                      child: potensiometer(),
-                    ),
-                    Align(
-                      alignment: const Alignment(0.785, -0.15),
-                      child: led(
+                      Positioned(
+                        top: 100,
+                        right: 155,
+                        child: potensiometer(),
+                      ),
+                      Align(
+                        alignment: const Alignment(0.76, -0.22),
+                        child: led(
                           led_shadow_color: led_shadow_color,
-                          led_color: led_color),
-                    ),
-                    Align(
-                      alignment: Alignment(0, 0.5),
-                      child: ElevatedButton(
-                          onPressed: (() {}),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.play_circle_outline_sharp),
-                              Text('RUN'),
-                            ],
-                          )),
-                    )
-                  ],
+                          led_color: led_color,
+                          led_lightness: lightness,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment(0, 0.8),
+                        child: ElevatedButton(
+                            onPressed: (() {
+                              var pot_number = int.parse(pot_num.text);
+
+                              if (pot_number == 0) {
+                                setState(() {
+                                  lightness = 0.0;
+                                  led_shadow_color = Colors.white;
+                                });
+                              } else if (pot_number <= 223 && pot_number > 0) {
+                                setState(() {
+                                  lightness = 0.3;
+                                  led_shadow_color = Colors.white;
+                                });
+                              } else if (pot_number <= 236 &&
+                                  pot_number > 223) {
+                                setState(() {
+                                  lightness = 0.4;
+                                  led_shadow_color = Colors.white;
+                                });
+                              } else if (pot_number <= 245 &&
+                                  pot_number > 236) {
+                                setState(() {
+                                  lightness = 0.5;
+                                  led_shadow_color = Colors.white;
+                                });
+                              } else if (pot_number > 245) {
+                                setState(() {
+                                  lightness = 0.53;
+                                  led_shadow_color = Colors.red;
+                                });
+                              }
+                            }),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.play_circle_outline_sharp),
+                                Text('RUN'),
+                              ],
+                            )),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ),
       ),
     ));
@@ -91,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
             width: _pot_width,
             height: _pot_hight,
             child: SleekCircularSlider(
-                initialValue: 255,
+                initialValue: 50,
                 innerWidget: (percentage) {
                   return Stack(
                     children: [
@@ -100,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: RotationTransition(
                           turns: AlwaysStoppedAnimation(angle / 360),
                           child: Container(
-                            alignment: Alignment.centerRight,
+                            alignment: Alignment.centerLeft,
                             width: (_pot_width! - 40),
                             height: (_pot_width! - 40),
                             decoration: BoxDecoration(
@@ -113,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 width: 20,
                                 height: 8,
                                 decoration: const BoxDecoration(
-                                  color: Colors.red,
+                                  color: Colors.white,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(200)),
                                 )),
@@ -134,10 +176,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     angleRange: 180),
                 onChange: (double value) {
                   setState(() {
-                    angle = (value.ceil().toInt() ~/ 1.416666) + 180;
+                    angle = (value.ceil().toInt() ~/ 1.416666);
                     pot_num.text = value.ceil().toString();
                   });
-                  print(value);
                 })),
       ],
     );
@@ -145,14 +186,16 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class led extends StatelessWidget {
-  const led({
-    Key? key,
-    required this.led_shadow_color,
-    required this.led_color,
-  }) : super(key: key);
+  const led(
+      {Key? key,
+      required this.led_shadow_color,
+      required this.led_color,
+      required this.led_lightness})
+      : super(key: key);
 
   final Color led_shadow_color;
-  final Color led_color;
+  final int led_color;
+  final double led_lightness;
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +214,8 @@ class led extends StatelessWidget {
             spreadRadius: 2.0,
           ), //BoxShadow
         ],
-        color: led_color,
+        color: HSLColor.fromAHSL(1, led_color.toDouble(), 1, led_lightness)
+            .toColor(),
         borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
