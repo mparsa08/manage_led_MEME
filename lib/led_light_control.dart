@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:flutter_custom_selector/flutter_custom_selector.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -12,6 +13,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int angle = 24;
   double lightness = 0.3;
+  Color led_shadow = Colors.white;
   double color_green = 120;
   double color_red = 0;
   double color_yellow = 51;
@@ -22,7 +24,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Color led_shadow_color = Colors.white;
   final double? _pot_width = 110;
   final double? _pot_hight = 110;
-  TextEditingController pot_num = TextEditingController(text: '255');
+  TextEditingController pot_num = TextEditingController(text: '24');
+  List<String> dataString = [
+    "Red",
+    "Green",
+    "Blue",
+    "Yellow",
+    "Orange",
+  ];
+  String? selectedString;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -43,20 +53,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: const Alignment(0, 0),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Color.fromRGBO(244, 245, 246, 1),
+                      color: const Color.fromRGBO(244, 245, 246, 1),
                       borderRadius: BorderRadius.circular(20)),
                   width: 620,
                   height: 410,
                   child: Stack(
                     children: [
-                      const Align(
-                        alignment: Alignment(0, 0),
-                        child: Image(
-                          image: AssetImage('assets/image/circut.png'),
-                          fit: BoxFit.cover,
-                          width: 600,
-                          height: 400,
-                        ),
+                      Align(
+                        alignment: const Alignment(0, 0),
+                        child: circut(),
                       ),
                       Positioned(
                         top: 100,
@@ -72,47 +77,69 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       Align(
-                        alignment: Alignment(0, 0.8),
-                        child: ElevatedButton(
-                            onPressed: (() {
-                              var pot_number = int.parse(pot_num.text);
+                        alignment: const Alignment(0, 0.8),
+                        child: RunButton(),
+                      ),
+                      Align(
+                        alignment: const Alignment(0.5, -0.22),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: const Text(
+                            '51 Ω',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: const Alignment(0.35, -0.650),
+                        child: Container(
+                          child: const Text(
+                            '1 KΩ',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment(0.9, -0.55),
+                        child: CustomSingleSelectField<String>(
+                          width: 120,
+                          items: dataString,
+                          title: "Led Color",
+                          initialValue: "Red",
+                          onSelectionDone: (value) {
+                            selectedString = value;
 
-                              if (pot_number == 0) {
-                                setState(() {
-                                  lightness = 0.0;
-                                  led_shadow_color = Colors.white;
-                                });
-                              } else if (pot_number <= 223 && pot_number > 0) {
-                                setState(() {
-                                  lightness = 0.3;
-                                  led_shadow_color = Colors.white;
-                                });
-                              } else if (pot_number <= 236 &&
-                                  pot_number > 223) {
-                                setState(() {
-                                  lightness = 0.4;
-                                  led_shadow_color = Colors.white;
-                                });
-                              } else if (pot_number <= 245 &&
-                                  pot_number > 236) {
-                                setState(() {
-                                  lightness = 0.5;
-                                  led_shadow_color = Colors.white;
-                                });
-                              } else if (pot_number > 245) {
-                                setState(() {
-                                  lightness = 0.53;
-                                  led_shadow_color = Colors.red;
-                                });
+                            setState(() {
+                              if (led_shadow_color != Colors.white) {
+                                led_shadow_color = Colors.white;
                               }
-                            }),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.play_circle_outline_sharp),
-                                Text('RUN'),
-                              ],
-                            )),
+                              if (selectedString == "Red") {
+                                led_color = color_red.toInt();
+                                color_of_inside_pot = color_red;
+                                led_shadow = Colors.red;
+                              } else if (selectedString == "Green") {
+                                led_color = color_green.toInt();
+                                color_of_inside_pot = color_green;
+                                led_shadow = Colors.green;
+                              } else if (selectedString == "Blue") {
+                                led_color = color_blue.toInt();
+                                color_of_inside_pot = color_blue;
+                                led_shadow = Colors.blue;
+                              } else if (selectedString == "Yellow") {
+                                led_color = color_yellow.toInt();
+                                color_of_inside_pot = color_yellow;
+                                led_shadow = Colors.yellow;
+                              } else if (selectedString == "Orange") {
+                                led_color = color_orange.toInt();
+                                color_of_inside_pot = color_orange;
+                                led_shadow = Colors.orange;
+                              }
+                            });
+                          },
+                          itemAsString: (item) => item,
+                        ),
                       )
                     ],
                   ),
@@ -123,6 +150,56 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ));
+  }
+
+  Image circut() {
+    return const Image(
+      image: AssetImage('assets/image/circut.png'),
+      fit: BoxFit.cover,
+      width: 600,
+      height: 400,
+    );
+  }
+
+  ElevatedButton RunButton() {
+    return ElevatedButton(
+        onPressed: (() {
+          var pot_number = int.parse(pot_num.text);
+
+          if (pot_number == 0) {
+            setState(() {
+              lightness = 0.0;
+              led_shadow_color = Colors.white;
+            });
+          } else if (pot_number <= 223 && pot_number > 0) {
+            setState(() {
+              lightness = 0.3;
+              led_shadow_color = Colors.white;
+            });
+          } else if (pot_number <= 236 && pot_number > 223) {
+            setState(() {
+              lightness = 0.4;
+              led_shadow_color = Colors.white;
+            });
+          } else if (pot_number <= 245 && pot_number > 236) {
+            setState(() {
+              lightness = 0.5;
+              led_shadow_color = Colors.white;
+            });
+          } else if (pot_number > 245) {
+            setState(() {
+              lightness = 0.53;
+              led_shadow_color = led_shadow;
+            });
+          }
+        }),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.play_circle_outline_sharp),
+            const Text('RUN'),
+          ],
+        ));
   }
 
   Column potensiometer() {
